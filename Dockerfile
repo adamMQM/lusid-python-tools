@@ -1,13 +1,5 @@
-FROM python:3.7.0
-
-WORKDIR /usr/src/
-
-RUN apt-get update && apt-get -y install jq
-
-# cache requirements as pip install can take long
-# and requirements shouldn't change often
-COPY requirements.txt /usr/src/requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . /usr/src/
-ENTRYPOINT PYTHONPATH=/usr/src/:/usr/src/tests python -m unittest discover -v
+FROM python:3.11.2-buster as py311
+RUN pip install poetry==1.4.2
+COPY . .
+RUN poetry install --only dev
+ENTRYPOINT poetry run tox
